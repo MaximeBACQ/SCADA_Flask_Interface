@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory I/O Control Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        async function updateStatus(coil) {
+            const response = await fetch(`/status_${coil}`);
+            const data = await response.json();
+            
+            document.getElementById(`${coil}_state`).innerText = data.state;
+
+            document.getElementById(`${coil}_toggle`).disabled = !data.user_control;
+
+            document.getElementById(`${coil}_control`).innerText = data.user_control ? "Lend Control Back" : "Take Control";
+        }
+
+        async function toggleCoil(coil) {
+            const response = await fetch(`/toggle_${coil}`);
+            if (response.ok) {
+                updateStatus(coil);
+            }
+        }
+
+        async function toggleControl(coil) {
+            const response = await fetch(`/control_${coil}`);
+            if (response.ok) {
+                updateStatus(coil);
+            }
+        }
+
+        function refreshAll() {
+            ["entry", "exit", "b", "g", "m"].forEach(updateStatus);
+        }
+
+        window.onload = refreshAll;
+    </script>
+</head>
+<body>
+    <h1>Factory I/O Control Panel</h1>
+
+    <div class="container">
+        <div class="coil-control">
+            <h2>Entry Convoyer</h2>
+            <p>State: <span id="entry_state">Loading...</span></p>
+            <button id="entry_toggle" onclick="toggleCoil('entry')" disabled>Toggle</button>
+            <button id="entry_control" onclick="toggleControl('entry')">Take Control</button>
+        </div>
+
+        <div class="coil-control">
+            <h2>Exit Convoyer</h2>
+            <p>State: <span id="exit_state">Loading...</span></p>
+            <button id="exit_toggle" onclick="toggleCoil('exit')" disabled>Toggle</button>
+            <button id="exit_control" onclick="toggleControl('exit')">Take Control</button>
+        </div>
+
+        <div class="coil-control">
+            <h2>Blue Sorter</h2>
+            <p>State: <span id="b_state">Loading...</span></p>
+            <button id="b_toggle" onclick="toggleCoil('b')" disabled>Toggle</button>
+            <button id="b_control" onclick="toggleControl('b')">Take Control</button>
+        </div>
+
+        <div class="coil-control">
+            <h2>Green Sorter</h2>
+            <p>State: <span id="g_state">Loading...</span></p>
+            <button id="g_toggle" onclick="toggleCoil('g')" disabled>Toggle</button>
+            <button id="g_control" onclick="toggleControl('g')">Take Control</button>
+        </div>
+
+        <div class="coil-control">
+            <h2>Metal Sorter</h2>
+            <p>State: <span id="m_state">Loading...</span></p>
+            <button id="m_toggle" onclick="toggleCoil('m')" disabled>Toggle</button>
+            <button id="m_control" onclick="toggleControl('m')">Take Control</button>
+        </div>
+    </div>
+</body>
+</html>
